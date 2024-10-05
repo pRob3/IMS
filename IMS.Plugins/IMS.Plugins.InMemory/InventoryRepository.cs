@@ -41,4 +41,28 @@ public class InventoryRepository : IInventoryRepository
 
         return _inventories.Where(i => i.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
     }
+
+    public Task<Inventory> GetInventoryByIdAsync(int inventoryId)
+    {
+        return Task.FromResult(_inventories.First(i => i.InventoryId == inventoryId));
+    }
+
+    public Task UpdateInventoryAsync(Inventory inventory)
+    {
+        if (_inventories.Any(i => i.InventoryId != inventory.InventoryId && i.
+            Name.Equals(inventory.Name, StringComparison.OrdinalIgnoreCase)))
+        {
+            return Task.CompletedTask;
+        }
+
+        var invToUpdate = _inventories.FirstOrDefault(i => i.InventoryId == inventory.InventoryId);
+        if (invToUpdate is not null)
+        {
+            invToUpdate.Name = inventory.Name;
+            invToUpdate.Quantity = inventory.Quantity;
+            invToUpdate.Price = inventory.Price;
+        }
+
+        return Task.CompletedTask;
+    }
 }
