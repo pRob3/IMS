@@ -1,0 +1,31 @@
+﻿@page "/"
+@inject IViewInventoriesByNameUseCase ViewInventoriesByNameUseCase
+
+<PageTitle>Testing!</PageTitle>
+<br />
+<br />
+
+@if (_inventories is not null && _inventories.Any())
+{
+    <ul>
+        @foreach (var inventory in _inventories)
+        {
+            <li>
+                @inventory.Name
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No inventories found!</p>
+}
+
+@code {
+    private List<Inventory>? _inventories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync()).ToList();
+    }
+}
