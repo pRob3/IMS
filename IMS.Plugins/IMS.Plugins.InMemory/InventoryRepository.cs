@@ -13,8 +13,8 @@ public class InventoryRepository : IInventoryRepository
         {
             new Inventory { InventoryId = 1, Name = "Bike Seat", Quantity = 10, Price = 2 },
             new Inventory { InventoryId = 2, Name = "Bike Body", Quantity = 10, Price = 15 },
-            new Inventory { InventoryId = 2, Name = "Bike Wheels", Quantity = 20, Price = 8 },
-            new Inventory { InventoryId = 3, Name = "Bike Pedals", Quantity = 20, Price = 1 },
+            new Inventory { InventoryId = 3, Name = "Bike Wheels", Quantity = 20, Price = 8 },
+            new Inventory { InventoryId = 4, Name = "Bike Pedals", Quantity = 20, Price = 1 },
         };
     }
 
@@ -29,6 +29,17 @@ public class InventoryRepository : IInventoryRepository
         inventory.InventoryId = maxId + 1;
 
         _inventories.Add(inventory);
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteInventoryByIdAsync(int id)
+    {
+        var inventory = _inventories.FirstOrDefault(i => i.InventoryId == id);
+        if (inventory is not null)
+        {
+            _inventories.Remove(inventory);
+        }
+
         return Task.CompletedTask;
     }
 
