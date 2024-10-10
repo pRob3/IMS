@@ -6,14 +6,14 @@
     <tr>
         <td>@Inventory.Name</td>
         <td>@Inventory.Quantity</td>
-        <td>@Inventory.Price</td>
+        <td>@Inventory.Price.ToString("c")</td>
         <td>
-            <a href="/inventories/edit/@Inventory.InventoryId" class="btn btn-light">Edit</a>
+            <a href="/inventories/edit/@Inventory.Id" class="btn btn-light">Edit</a>
         </td>
         <td>
             <EditForm Enhance="true" Model="Inventory" 
-                FormName="@($"form-delete-inventory-{Inventory.InventoryId}")" 
-                OnValidSubmit="() => DeleteInventory(Inventory.InventoryId)">
+                FormName="@($"form-delete-inventory-{Inventory.Id}")" 
+                OnValidSubmit="() => DeleteInventory(Inventory.Id)">
                 <button type="submit" class="btn btn-light">Delete</button>
             </EditForm>
         </td>

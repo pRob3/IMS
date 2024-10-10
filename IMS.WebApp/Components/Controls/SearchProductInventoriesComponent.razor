@@ -1,0 +1,56 @@
+﻿@inject IViewInventoriesByNameUseCase ViewInventoriesByNameUseCase
+<div class="input-group">
+    <input 
+        class="form-control" 
+        placeholder="Search something to search"
+        @bind-value="this.searchFilter"
+        @bind-value:event="oninput"
+    >
+    </input>
+    <button type="button" class="btn-success input-group-text" @onclick="HandleSearch">Search</button>
+</div>
+
+@if (Inventories is not null && Inventories.Count > 0)
+{
+    <div class="search-result">
+        <ul>
+            @foreach (var inventory in Inventories)
+            {
+                <li @key="inventory.Id" @onclick="() => { HandleSelectInventory(inventory); }">
+                    @inventory.Name
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<Inventory> OnInventorySelected { get; set; }
+
+    private string _searchFilter = string.Empty;
+    private string searchFilter 
+    {
+        get => _searchFilter;
+        set
+        {
+            _searchFilter = value;
+            _ = HandleSearch();
+        }
+    }
+    private List<Inventory>? Inventories;
+
+    private async Task HandleSearch()
+    {
+        await Task.Delay(1000);
+        Inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync(searchFilter)).ToList();
+
+        StateHasChanged();
+    }
+
+    private async Task HandleSelectInventory(Inventory inventory)
+    {
+        await OnInventorySelected.InvokeAsync(inventory);
+        Inventories.Clear();
+    }
+}

@@ -4,7 +4,7 @@ namespace IMS.CoreBusiness;
 
 public class Inventory
 {
-    public int InventoryId { get; set; }
+    public int Id { get; set; }
 
     [Required]
     [StringLength(150)]

@@ -2,24 +2,12 @@
 using IMS.UseCases.Inventories.Interfaces;
 using IMS.UseCases.PluginInterfaces;
 
-namespace IMS.UseCases.Inventories
+namespace IMS.UseCases.Inventories;
+
+public class AddInventoryUseCase(IInventoryRepository inventoryRepository) : IAddInventoryUseCase
 {
-
-    public class AddInventoryUseCase : IAddInventoryUseCase
+    public async Task ExecuteAsync(Inventory inventory)
     {
-        private readonly IInventoryRepository _inventoryRepository;
-
-        public AddInventoryUseCase(IInventoryRepository inventoryRepository)
-        {
-            _inventoryRepository = inventoryRepository;
-        }
-
-        public async Task ExecuteAsync(Inventory inventory)
-        {
-            // Validating logic here
-
-
-            await this._inventoryRepository.AddInventortyAsync(inventory);
-        }
+        await inventoryRepository.AddInventoryAsync(inventory);
     }
 }
