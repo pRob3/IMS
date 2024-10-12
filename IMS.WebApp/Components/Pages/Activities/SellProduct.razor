@@ -1,31 +1,30 @@
-﻿@page "/produce"
+﻿@page "/sell"
 
 @rendermode InteractiveServer
 
 @using static IMS.WebApp.Components.Controls.Common.AutoCompleteComponent
-
 @inject IJSRuntime JsRuntime
 
 @inject IViewProductsByNameUseCase ViewProductsByNameUseCase
 @inject IViewProductByIdUseCase ViewProductByIdUseCase
-@inject IProduceProductUseCase ProduceProductUseCase
+@inject ISellProductUseCase SellProductUseCase
 
-<h3>Produce Product</h3>
+<h3>Sell Product</h3>
+<br />
 
-<EditForm id="produce-form" Model="produceViewModel" OnValidSubmit="Produce">
+<EditForm id="sell-form" Model="sellViewModel" OnValidSubmit="Sell">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="form-group">
         <label for="po">Production #</label>
-        <InputText id="po" @bind-Value="produceViewModel.ProductionNumber" class="form-control"></InputText>
+        <InputText id="po" @bind-Value="sellViewModel.SalesOrderNumber" class="form-control"></InputText>
     </div>
-
     <br />
     <div class="card">
         <div class="card-body">
             <div class="form-group">
-                <AutoCompleteComponent Label="Product to Produce"
+                <AutoCompleteComponent Label="Product to Sell"
                                        SearchFunction="SearchProduct"
                                        OnItemSelected="HandleItemSelected" />
 
@@ -35,14 +34,19 @@
     <br />
     <div class="form-group">
         <label for="qty">Quantity</label>
-        <InputNumber id="qty" @bind-Value="produceViewModel.QuantityToProduce" class="form-control"></InputNumber>
+        <InputNumber id="qty" @bind-Value="sellViewModel.QuantityToSell" class="form-control"></InputNumber>
     </div>
     <br />
-    <button type="submit" class="btn btn-primary">Produce</button>
+    <div class="form-group">
+        <label for="price">Unit Price</label>
+        <InputNumber id="price" @bind-Value="sellViewModel.UnitPrice" class="form-control"></InputNumber>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Sell</button>
 </EditForm>
 
 @code {
-    private ProduceViewModel produceViewModel = new ProduceViewModel();
+    private SellViewModel sellViewModel = new SellViewModel();
     private Product? selectedProduct = null;
 
     protected override void OnAfterRender(bool firstRender)
@@ -51,7 +55,7 @@
 
         if (firstRender)
         {
-            JsRuntime.InvokeVoidAsync("preventFormSubmission", "produce-form");
+            JsRuntime.InvokeVoidAsync("preventFormSubmission", "sell-form");
         }
     }
 
@@ -66,20 +70,21 @@
     {
         selectedProduct = await ViewProductByIdUseCase.ExecuteAsync(item.Id);
 
-        this.produceViewModel.ProductId = item.Id;
-        produceViewModel.Product = this.selectedProduct;
+        sellViewModel.ProductId = item.Id;
+        sellViewModel.Product = selectedProduct;
+        sellViewModel.UnitPrice = selectedProduct.Price;
     }
 
-    private async Task Produce()
+    private async Task Sell()
     {
-        await ProduceProductUseCase.ExecuteAsync(
-            this.produceViewModel.ProductionNumber,
-            selectedProduct,
-            this.produceViewModel.QuantityToProduce,
-            "Dennis"
-        );
+        await SellProductUseCase.ExecuteAsync(
+            sellViewModel.SalesOrderNumber, 
+            selectedProduct, 
+            sellViewModel.QuantityToSell,
+            sellViewModel.UnitPrice,
+            "Dennis");
 
-        this.produceViewModel = new ProduceViewModel();
-        this.selectedProduct = null;
+        sellViewModel = new SellViewModel();
+        selectedProduct = null;
     }
 }

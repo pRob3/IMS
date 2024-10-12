@@ -57,5 +57,22 @@ public class ProductTransactionRepository : IProductTransactionRepository
             DoneBy = doneBy
         });
     }
+
+    public Task SellProductAsync(string salesOrderNumber, Product product, int quantity, double unitPrice, string doneBy)
+    {
+        _productTransactions.Add(new ProductTransaction
+        {
+            ActivityType = ProductTransactionType.SellProduct,
+            SONumber = salesOrderNumber,
+            ProductId = product.Id,
+            QuantityBefore = product.Quantity,
+            QuantityAfter = product.Quantity - quantity,
+            TransactionDate = DateTime.Now,
+            DoneBy = doneBy,
+            UnitPrice = unitPrice
+        });
+
+        return Task.CompletedTask;
+    }
 }
 
