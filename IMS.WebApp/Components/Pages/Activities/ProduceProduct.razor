@@ -1,0 +1,90 @@
+﻿@page "/produce"
+
+@rendermode InteractiveServer
+
+@using static IMS.WebApp.Components.Controls.Common.AutoCompleteComponent
+
+@inject IJSRuntime JsRuntime
+
+@inject IViewProductsByNameUseCase ViewProductsByNameUseCase
+@inject IViewProductByIdUseCase ViewProductByIdUseCase
+@inject IProduceProductUseCase ProduceProductUseCase
+
+<h3>Produce Product</h3>
+
+<EditForm id="produce-form" Model="produceViewModel" OnValidSubmit="Produce">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="po">Production #</label>
+        <InputText id="po" @bind-Value="produceViewModel.ProductionNumber" class="form-control"></InputText>
+    </div>
+
+    <br />
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group">
+                <AutoCompleteComponent Label="Product to Produce"
+                                       SearchFunction="SearchProduct"
+                                       OnItemSelected="HandleItemSelected" />
+
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="qty">Quantity</label>
+        <InputNumber id="qty" @bind-Value="produceViewModel.QuantityToProduce" class="form-control"></InputNumber>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Produce</button>
+</EditForm>
+
+@code {
+    private ProduceViewModel produceViewModel = new ProduceViewModel();
+    private Product? selectedProduct = null;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (firstRender)
+        {
+            JsRuntime.InvokeVoidAsync("preventFormSubmission", "produce-form");
+        }
+    }
+
+    private List<ItemViewModel>? SearchProduct(string name)
+    {
+        var list = ViewProductsByNameUseCase.ExecuteAsync(name).GetAwaiter().GetResult();
+
+        if (list is null)
+        {
+            return null;
+        }
+
+        return list.Select(x => new ItemViewModel { Id = x.Id, Name = x.Name })?.ToList();
+    }
+
+    private async Task HandleItemSelected(ItemViewModel item)
+    {
+        selectedProduct = await ViewProductByIdUseCase.ExecuteAsync(item.Id);
+
+        this.produceViewModel.ProductId = item.Id;
+        produceViewModel.Product = this.selectedProduct;
+    }
+
+    private async Task Produce()
+    {
+        await ProduceProductUseCase.ExecuteAsync(
+            this.produceViewModel.ProductionNumber,
+            selectedProduct,
+            this.produceViewModel.QuantityToProduce,
+            "Dennis"
+        );
+
+        this.produceViewModel = new ProduceViewModel();
+        this.selectedProduct = null;
+    }
+}
