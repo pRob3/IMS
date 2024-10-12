@@ -71,20 +71,20 @@
     {
         selectedInventory = await ViewInventoryByIdUseCase.ExecuteAsync(item.Id);
 
-        this.purchaseViewModel.InventoryId = item.Id;
-        this.purchaseViewModel.InventoryPrice = selectedInventory.Price;
+        purchaseViewModel.InventoryId = item.Id;
+        purchaseViewModel.InventoryPrice = selectedInventory.Price;
     }
 
     private async Task Purchase()
     {
         await PurchaseInventoryUseCase.ExecuteAsync(
-            this.purchaseViewModel.PONumber,
+            purchaseViewModel.PONumber,
             selectedInventory,
-            this.purchaseViewModel.QuantityToPurchase,
+            purchaseViewModel.QuantityToPurchase,
             "Dennis"
         );
 
-        this.purchaseViewModel = new PurchaseViewModel();
-        this.selectedInventory = null;
+        purchaseViewModel = new PurchaseViewModel();
+        selectedInventory = null;
     }
 }
