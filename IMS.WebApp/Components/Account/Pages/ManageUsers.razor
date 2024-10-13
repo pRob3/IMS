@@ -1,0 +1,70 @@
+﻿@page "/Account/ManageUsers"
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@attribute [Authorize(Policy = "Admin")]
+
+@inject UserManager<ApplicationUser> userManager
+
+<h3>Manage Users</h3>
+<br />
+
+@if (usersWithClaims is not null && usersWithClaims.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>PhoneNumber</th>
+                <th>Claims</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var userWithClaims in usersWithClaims)
+            {
+                <tr>
+                    <td>@userWithClaims.User.UserName</td>
+                    <td>@userWithClaims.User.Email</td>
+                    <td>@userWithClaims.User.PhoneNumber</td>
+                    <td>
+                        @foreach (var claim in userWithClaims.Claims)
+                        {
+                            <div>@claim.Type: @claim.Value</div>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-link" href="/account/manageuser/@userWithClaims.User.Id">Manage</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<UserWithClaims>? usersWithClaims;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var users = userManager.Users.ToList();
+        usersWithClaims = new List<UserWithClaims>();
+
+        foreach (var user in users)
+        {
+            var claims = await userManager.GetClaimsAsync(user);
+            usersWithClaims.Add(new UserWithClaims
+                {
+                    User = user,
+                    Claims = claims
+                });
+        }
+    }
+
+    public class UserWithClaims
+    {
+        public ApplicationUser User { get; set; }
+        public IList<Claim> Claims { get; set; }
+    }
+}

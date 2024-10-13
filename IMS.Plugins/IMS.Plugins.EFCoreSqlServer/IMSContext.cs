@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace IMS.Plugins.EFCoreSqlServer;
-public class DBContext : DbContext
+public class IMSContext : DbContext
 {
-    public DBContext(DbContextOptions<DBContext> options) : base(options)
+    public IMSContext(DbContextOptions<IMSContext> options) : base(options)
     {
     }
 

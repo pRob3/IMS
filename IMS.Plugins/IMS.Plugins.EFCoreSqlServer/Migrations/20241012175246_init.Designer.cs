@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IMS.Plugins.EFCoreSqlServer.Migrations
 {
-    [DbContext(typeof(DBContext))]
+    [DbContext(typeof(IMSContext))]
     [Migration("20241012175246_init")]
     partial class init
     {

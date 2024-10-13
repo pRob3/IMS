@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 namespace IMS.Plugins.EFCoreSqlServer;
 public class InventoryEFCoreRepository : IInventoryRepository
 {
-    private readonly IDbContextFactory<DBContext> _contextFactory;
+    private readonly IDbContextFactory<IMSContext> _contextFactory;
 
-    public InventoryEFCoreRepository(IDbContextFactory<DBContext> contextFactory)
+    public InventoryEFCoreRepository(IDbContextFactory<IMSContext> contextFactory)
     {
         _contextFactory = contextFactory;
     }

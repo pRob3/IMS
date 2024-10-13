@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IMS.Plugins.EFCoreSqlServer.Migrations
 {
-    [DbContext(typeof(DBContext))]
+    [DbContext(typeof(IMSContext))]
     partial class DBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

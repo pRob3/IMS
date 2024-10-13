@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 namespace IMS.Plugins.EFCoreSqlServer;
 public class ProductEFCoreRepository : IProductRepository
 {
-    private readonly IDbContextFactory<DBContext> _contextFactory;
+    private readonly IDbContextFactory<IMSContext> _contextFactory;
 
-    public ProductEFCoreRepository(IDbContextFactory<DBContext> contextFactory)
+    public ProductEFCoreRepository(IDbContextFactory<IMSContext> contextFactory)
     {
         _contextFactory = contextFactory;
     }
@@ -81,7 +81,7 @@ public class ProductEFCoreRepository : IProductRepository
         }
     }
 
-    private void FlagInventoryUnchanged(Product product, DBContext db)
+    private void FlagInventoryUnchanged(Product product, IMSContext db)
     {
         if (product?.ProductInventories is not null && product.ProductInventories.Count > 0)
         {

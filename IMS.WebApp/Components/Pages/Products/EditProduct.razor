@@ -1,4 +1,5 @@
 ﻿@page "/products/edit/{id:int}"
+@attribute [Authorize(Policy = "Inventory")]
 @rendermode InteractiveServer
 
 @inject NavigationManager NavigationManager

@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 namespace IMS.Plugins.EFCoreSqlServer;
 public class ProductTransactionEFCoreRepository : IProductTransactionRepository
 {
-    private readonly IDbContextFactory<DBContext> _contextFactory;
+    private readonly IDbContextFactory<IMSContext> _contextFactory;
     private readonly IProductRepository _productRepository;
     private readonly IInventoryTransactionRepository _inventoryTransactionRepository;
     private readonly IInventoryRepository _inventoryRepository;
 
-    public ProductTransactionEFCoreRepository(IDbContextFactory<DBContext> contextFactory, IProductRepository productRepository,
+    public ProductTransactionEFCoreRepository(IDbContextFactory<IMSContext> contextFactory, IProductRepository productRepository,
         IInventoryTransactionRepository inventoryTransactionRepository,
         IInventoryRepository inventoryRepository)
     {

@@ -6,9 +6,9 @@ namespace IMS.Plugins.EFCoreSqlServer;
 
 public class InventoryTransactionEFCoreRepository : IInventoryTransactionRepository
 {
-    private readonly IDbContextFactory<DBContext> _contextFactory;
+    private readonly IDbContextFactory<IMSContext> _contextFactory;
 
-    public InventoryTransactionEFCoreRepository(IDbContextFactory<DBContext> contextFactory)
+    public InventoryTransactionEFCoreRepository(IDbContextFactory<IMSContext> contextFactory)
     {
         _contextFactory = contextFactory;
     }

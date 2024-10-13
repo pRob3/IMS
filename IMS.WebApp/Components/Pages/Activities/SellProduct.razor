@@ -1,8 +1,11 @@
 ﻿@page "/sell"
+@attribute [Authorize(Policy = "Sales")]
 
 @rendermode InteractiveServer
 
 @using static IMS.WebApp.Components.Controls.Common.AutoCompleteComponent
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JsRuntime
 
 @inject IViewProductsByNameUseCase ViewProductsByNameUseCase
@@ -49,6 +52,14 @@
     private SellViewModel sellViewModel = new SellViewModel();
     private Product? selectedProduct = null;
 
+
+    private AuthenticationState? authState;
+
+    override protected async Task OnInitializedAsync()
+    {
+        authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
@@ -77,12 +88,18 @@
 
     private async Task Sell()
     {
+        string userName = string.Empty;
+        if (authState?.User?.Identity?.IsAuthenticated ?? false)
+        {
+            userName = authState.User.Identity.Name ?? string.Empty;
+        }
+
         await SellProductUseCase.ExecuteAsync(
             sellViewModel.SalesOrderNumber, 
             selectedProduct, 
             sellViewModel.QuantityToSell,
             sellViewModel.UnitPrice,
-            "Dennis");
+            userName);
 
         sellViewModel = new SellViewModel();
         selectedProduct = null;

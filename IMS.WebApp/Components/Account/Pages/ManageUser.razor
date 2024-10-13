@@ -1,0 +1,101 @@
+﻿@page "/Account/ManageUser/{Id}"
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using Microsoft.Build.Framework
+
+@attribute [Authorize(Policy = "Admin")]
+
+@rendermode InteractiveServer
+
+@inject UserManager<ApplicationUser> userManager
+@inject NavigationManager NavigationManager
+
+<h3>Manage User</h3>
+
+@if (viewModel is not null)
+{
+    <EditForm FormName="formManageUser" Model="@viewModel" OnValidSubmit="SaveUser">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" id="email" class="form-control" readonly value="@viewModel.Email" />
+        </div>
+        <br />
+        <div class="form-group">
+            <label for="dp">Department</label>
+            <InputSelect id="dp" class="form-control" @bind-Value="@viewModel.Department">
+                <option>Select Department</option>
+                <option value="Administration">Admin</option>
+                <option value="InventoryManagment">Inventory Managment</option>
+                <option value="Sales">Sales</option>
+                <option value="Purchasing">Purchasing</option>
+                <option value="ProductionManagment">Production Managment</option>
+            </InputSelect>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a class="btn btn-primary" href="/account/manageusers">Cancel</a>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private const string departmentClaimType = "Department";
+
+    private ApplicationUser? user;
+    private Claim? departmentClaim;
+    private bool userHadDepartment = true;
+
+    [SupplyParameterFromForm(FormName = "formManageUser")]
+    private ManageUserViewModel? viewModel { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        user = userManager.Users.FirstOrDefault(u => u.Id == Id);
+        var claims = await userManager.GetClaimsAsync(user);
+        departmentClaim = claims.FirstOrDefault(c => c.Type == departmentClaimType);
+        if (departmentClaim is null)
+        {
+            userHadDepartment = false;
+            departmentClaim = new Claim(departmentClaimType, string.Empty);
+        }
+
+        viewModel ??= new ManageUserViewModel
+            {
+                Email = user.Email ?? string.Empty,
+                Department = departmentClaim.Value
+            };
+    }
+
+    private async Task SaveUser()
+    {
+        if (user is null || departmentClaim is null)
+        {
+            return;
+        }
+
+        if (userHadDepartment)
+        {
+            await userManager.ReplaceClaimAsync(user, departmentClaim, new Claim(departmentClaimType, viewModel?.Department ?? string.Empty));
+        }
+        else
+        {
+            await userManager.AddClaimAsync(user, new Claim(departmentClaimType, viewModel?.Department ?? string.Empty));
+        }        
+
+        NavigationManager.NavigateTo("/account/manageusers");
+    }
+
+    public class ManageUserViewModel
+    {
+
+        public string Email { get; set; }
+
+        [Required]
+        public string Department { get; set; }
+    }
+}
