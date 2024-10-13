@@ -64,7 +64,9 @@
     private async Task<List<ItemViewModel>?> SearchInventory(string name)
     {
         var list = await ViewInventoriesByNameUseCase.ExecuteAsync(name);
-        return list?.Select(x => new ItemViewModel { Id = x.Id, Name = x.Name })?.ToList();
+        if (list is null) return null;
+
+        return list.Select(x => new ItemViewModel { Id = x.Id, Name = x.Name })?.ToList();
     }
 
     private async Task HandleItemSelected(ItemViewModel item)
@@ -77,6 +79,7 @@
 
     private async Task Purchase()
     {
+
         await PurchaseInventoryUseCase.ExecuteAsync(
             purchaseViewModel.PONumber,
             selectedInventory,
@@ -86,5 +89,7 @@
 
         purchaseViewModel = new PurchaseViewModel();
         selectedInventory = null;
+
+        
     }
 }

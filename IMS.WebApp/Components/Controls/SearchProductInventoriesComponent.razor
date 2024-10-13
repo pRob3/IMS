@@ -10,14 +10,14 @@
     <button type="button" class="btn-success input-group-text" @onclick="HandleSearch">Search</button>
 </div>
 
-@if (Inventories is not null && Inventories.Count > 0)
+@if (inventories?.Count > 0)
 {
     <div class="search-result">
         <ul>
-            @foreach (var inventory in Inventories)
+            @foreach (var inv in inventories)
             {
-                <li @key="inventory.Id" @onclick="() => { HandleSelectInventory(inventory); }">
-                    @inventory.Name
+                <li @key="inv.Id" @onclick="() => { HandleSelectInventory(inv); }">
+                    @inv.Name
                 </li>
             }
         </ul>
@@ -38,12 +38,12 @@
             _ = HandleSearch();
         }
     }
-    private List<Inventory>? Inventories;
+    private List<Inventory> inventories = new List<Inventory>(); 
 
     private async Task HandleSearch()
     {
         await Task.Delay(1000);
-        Inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync(searchFilter)).ToList();
+        inventories = (await ViewInventoriesByNameUseCase.ExecuteAsync(searchFilter)).ToList();
 
         StateHasChanged();
     }
@@ -51,6 +51,6 @@
     private async Task HandleSelectInventory(Inventory inventory)
     {
         await OnInventorySelected.InvokeAsync(inventory);
-        Inventories.Clear();
+        inventories = new List<Inventory>();
     }
 }
